@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from typing import List
 
 from services import *
 from schemas import *
@@ -34,5 +35,12 @@ async def user_favorite_remove(user_id: int, symbol: str):
     try:
         await FavoriteService.remove_favorite(user_id=user_id, symbol=symbol)
         return StandardOutput(message='OK')
+    except Exception as error:
+        raise HTTPException(status_code=400, detail=str(error))
+    
+@user_router.get('/list', response_model=List[UserListOutput], responses={400: {'model': ErrorOutoput}})
+async def user_list():
+    try:
+        return await UserService.list_user()
     except Exception as error:
         raise HTTPException(status_code=400, detail=str(error))
