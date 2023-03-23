@@ -1,8 +1,10 @@
+from asyncio import gather
 from fastapi import APIRouter, HTTPException
 from typing import List
 
 from services import *
 from schemas import *
+
 user_router = APIRouter(prefix='/user')
 assets_router = APIRouter(prefix='/assets')
 
@@ -42,5 +44,21 @@ async def user_favorite_remove(user_id: int, symbol: str):
 async def user_list():
     try:
         return await UserService.list_user()
+    except Exception as error:
+        raise HTTPException(status_code=400, detail=str(error))
+    
+@assets_router.get('/day_summary/{user_id}', response_model=List[DaySummaryOutput], responses={400: {'model': ErrorOutoput}})
+async def day_summary(user_id: int):
+    try:
+        user = await UserService.get_by_id(user_id)
+        favorites_symbols = [favorite.symbol for favorite in user.favorites]
+        tasks = [AssetService.day_summary(symbol=symbol) for symbol in favorites_symbols]
+        return await gather(*tasks)
+
+        # response = []
+        # for symbol in favorites_symbols:
+        #     result = await AssetService.day_summary(symbol=symbol)
+        #     response.append(result)
+
     except Exception as error:
         raise HTTPException(status_code=400, detail=str(error))
