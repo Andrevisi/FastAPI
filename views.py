@@ -10,6 +10,6 @@ assets_router = APIRouter(prefix='/assets')
 async def user_create(user_input: UserCreateInput):
     try:
         await UserService.create_user(name=user_input.name)
-        return StandardOutput(message='User created')
+        return StandardOutput(message='OK')
     except Exception as error:
         raise HTTPException(status_code=400, detail=str(error))
