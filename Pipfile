@@ -11,6 +11,8 @@ asyncpg = "*"
 python-dotenv = "*"
 aiohttp = "*"
 certifi = "*"
+requests = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
